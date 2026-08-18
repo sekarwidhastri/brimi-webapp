@@ -692,6 +692,31 @@
         ]
       },
       {
+        "section": "ETF Gold (Active)",
+        "is_usd": false,
+        "aum_unit": "Rp Miliar",
+        "funds": [
+          {
+            "display_name": "BRI MI Gold ETF Syariah",
+            "alias": null,
+            "is_index": false,
+            "active": true
+          },
+          {
+            "display_name": "Syailendra ETF Sharia Gold",
+            "alias": null,
+            "is_index": false,
+            "active": true
+          },
+          {
+            "display_name": "Premier ETF Gold Sharia Indonesia",
+            "alias": null,
+            "is_index": false,
+            "active": true
+          }
+        ]
+      },
+      {
         "section": "Money Market",
         "is_usd": false,
         "aum_unit": "Rp Miliar",
