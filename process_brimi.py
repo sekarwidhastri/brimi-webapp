@@ -627,6 +627,11 @@ def get_perf(
     perf_row = perf_fn(perf_name, primary)
     if perf_row is None:
         perf_row = perf_fn(perf_name, secondary)
+    if perf_row is None and perf_name != name:
+        # Fallback to display name if alias not found
+        perf_row = perf_fn(name, primary)
+        if perf_row is None:
+            perf_row = perf_fn(name, secondary)
     if perf_row is not None:
         for col in PERF_COLS:
             result[col] = safe(perf_row, D1_COL.get(col))
