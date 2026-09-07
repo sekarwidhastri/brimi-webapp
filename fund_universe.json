@@ -236,7 +236,7 @@
         "funds": [
           {
             "display_name": "Trim Syariah Saham Kelas A",
-            "alias": null,
+            "alias": "Trim Syariah Saham",
             "is_index": false,
             "active": true
           },
