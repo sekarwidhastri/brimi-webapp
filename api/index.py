@@ -233,13 +233,24 @@ def serve_page(today):
 
             try {{
                 const response = await fetch('/process', {{ method: 'POST', body: formData }});
-                const data = await response.json();
+                let data;
+                try {{
+                    data = await response.json();
+                }} catch (jsonErr) {{
+                    const text = await response.text().catch(() => '');
+                    data = {{
+                        status: 'error',
+                        message: `Server returned status ${{response.status}} ${{response.statusText}}: ${{text.substring(0, 300)}}`
+                    }};
+                }}
                 handleResponse(data);
             }} catch (err) {{
                 loading.classList.remove('active');
                 status.classList.add('active', 'error');
                 statusTitle.textContent = 'Network error';
-                statusBody.textContent = err.message;
+                statusBody.textContent = (err.message === 'Failed to fetch') 
+                    ? 'Koneksi terputus atau server timeout saat memproses file. Pastikan koneksi internet stabil dan coba klik Process Files sekali lagi.' 
+                    : err.message;
             }}
             processBtn.disabled = false;
             processBtn.textContent = 'Process Files';
