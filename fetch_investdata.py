@@ -102,7 +102,7 @@ def get_token():
     return tok["access_token"]
 
 
-def fetch_all(token):
+def fetch_all(token, target_date: str | None = None):
     """Fetch all required data from the API."""
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -111,8 +111,16 @@ def fetch_all(token):
     r.raise_for_status()
     nav_data = r.json()
 
-    # 2. AUM data
-    r = requests.get(f"{API_BASE}/api/mutualfund/data/aum", headers=headers)
+    # Determine date for AUM lookup (use target_date, or latest date from nav_data)
+    aum_date = target_date
+    if not aum_date and nav_data:
+        dates = sorted(set(r["date"] for r in nav_data if r.get("date")), reverse=True)
+        if dates:
+            aum_date = dates[0]
+
+    # 2. AUM data (pass date parameter to retrieve latest month-end AUM)
+    aum_params = {"date": aum_date} if aum_date else None
+    r = requests.get(f"{API_BASE}/api/mutualfund/data/aum", headers=headers, params=aum_params)
     r.raise_for_status()
     aum_data = r.json()
 
@@ -147,9 +155,10 @@ def build_download_sheet(nav_data, aum_data, scoring_data, target_date_str):
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     score_label = f"{dt.day}-{months[dt.month - 1]}-{dt.year}"
 
-    # Index AUM by productId
+    # Index AUM by productId (sort by date ascending so the most recent date takes precedence)
     aum_by_product = {}
-    for r in aum_data:
+    sorted_aum = sorted(aum_data, key=lambda x: str(x.get("date", "")))
+    for r in sorted_aum:
         aum_by_product[r["productId"]] = r
 
     # Index scoring by productId
